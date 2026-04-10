@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1077991053183",
+    "project_id": "flutterapp-b57a2",
+    "storage_bucket": "flutterapp-b57a2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1077991053183:android:21a35774b3cb38beffac4a",
+        "android_client_info": {
+          "package_name": "com.example.twitter_login_ui"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4MaUayyZwfs9U53Tgm93bJNxgdUdp760"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

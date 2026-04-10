@@ -1,0 +1,11 @@
+analyzer:
+  exclude:
+    - build/**
+    - lib/**/*.g.dart
+
+linter:
+  rules:
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false
+    prefer_const_declarations: false
+    # adicione aqui outras regras que quiser desativar

@@ -1,0 +1,12 @@
+{
+  "editor.renderValidationDecorations": "off",
+  "editor.quickSuggestions": {
+    "comments": "off",
+    "strings": "off",
+    "other": "off"
+  },
+  "problems.decorations.enabled": false,
+  "dart.showTodos": false,
+  "snyk.advanced.autoSelectOrganization": true,
+  "java.configuration.updateBuildConfiguration": "interactive"
+}
