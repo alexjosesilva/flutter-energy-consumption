@@ -1,4 +1,4 @@
-package com.example.twitter_login_ui
+package com.b2bgoverno.app
 
 import io.flutter.embedding.android.FlutterActivity
 

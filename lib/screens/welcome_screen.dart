@@ -64,7 +64,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 26),
                 const Text(
-                  'WELCOME',
+                  'B2B Governo',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 34,
