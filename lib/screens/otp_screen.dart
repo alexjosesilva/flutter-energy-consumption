@@ -1,11 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../widgets/input_field.dart';
 import '../widgets/background_pattern.dart';
-import 'otp_screen.dart';
 
-class ForgotScreen extends StatefulWidget {
-  const ForgotScreen({super.key});
+class OtpScreen extends StatefulWidget {
+  final String verificationId;
+  final String phoneNumber;
+
+  const OtpScreen({
+    super.key,
+    required this.verificationId,
+    required this.phoneNumber,
+  });
 
   static const Color orangeBg = Color(0xFFFF5A1F);
   static const Color orangeButton = Color(0xFFFF5A1F);
@@ -13,28 +18,24 @@ class ForgotScreen extends StatefulWidget {
   static const Color textLight = Color(0xFF9A9A9A);
 
   @override
-  State<ForgotScreen> createState() => _ForgotScreenState();
+  State<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _ForgotScreenState extends State<ForgotScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-
+class _OtpScreenState extends State<OtpScreen> {
+  final TextEditingController codeController = TextEditingController();
   bool isLoading = false;
 
   @override
   void dispose() {
-    emailController.dispose();
-    phoneController.dispose();
+    codeController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleSend() async {
-    final email = emailController.text.trim();
-    final phone = phoneController.text.trim();
+  Future<void> _verifyCode() async {
+    final code = codeController.text.trim();
 
-    if (email.isEmpty && phone.isEmpty) {
-      _showMessage('Informe email ou telefone.');
+    if (code.isEmpty || code.length < 6) {
+      _showMessage('Informe o código de 6 dígitos.');
       return;
     }
 
@@ -43,11 +44,21 @@ class _ForgotScreenState extends State<ForgotScreen> {
     });
 
     try {
-      if (email.isNotEmpty) {
-        await _resetByEmail(email);
-      } else {
-        await _resetByPhone(phone);
-      }
+      final credential = PhoneAuthProvider.credential(
+        verificationId: widget.verificationId,
+        smsCode: code,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (!mounted) return;
+
+      _showMessage('Telefone validado com sucesso.');
+      Navigator.popUntil(context, (route) => route.isFirst);
+    } on FirebaseAuthException catch (e) {
+      _showMessage(_firebaseErrorMessage(e));
+    } catch (_) {
+      _showMessage('Erro ao validar código.');
     } finally {
       if (mounted) {
         setState(() {
@@ -57,74 +68,14 @@ class _ForgotScreenState extends State<ForgotScreen> {
     }
   }
 
-  Future<void> _resetByEmail(String email) async {
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      _showMessage('Email de recuperação enviado com sucesso.');
-    } on FirebaseAuthException catch (e) {
-      _showMessage(_firebaseErrorMessage(e));
-    } catch (_) {
-      _showMessage('Erro ao enviar email de recuperação.');
-    }
-  }
-
-  Future<void> _resetByPhone(String phone) async {
-    try {
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: phone,
-        timeout: const Duration(seconds: 60),
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          try {
-            await FirebaseAuth.instance.signInWithCredential(credential);
-            if (!mounted) return;
-            _showMessage('Telefone validado com sucesso.');
-          } catch (_) {
-            if (!mounted) return;
-            _showMessage('Erro ao validar telefone.');
-          }
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          if (!mounted) return;
-          _showMessage(_firebaseErrorMessage(e));
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          if (!mounted) return;
-
-          _showMessage('Código enviado por SMS.');
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => OtpScreen(
-                verificationId: verificationId,
-                phoneNumber: phone,
-              ),
-            ),
-          );
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {},
-      );
-    } on FirebaseAuthException catch (e) {
-      _showMessage(_firebaseErrorMessage(e));
-    } catch (_) {
-      _showMessage('Erro ao iniciar recuperação por telefone.');
-    }
-  }
-
   String _firebaseErrorMessage(FirebaseAuthException e) {
     switch (e.code) {
-      case 'invalid-email':
-        return 'Email inválido.';
-      case 'missing-email':
-        return 'Informe um email.';
-      case 'user-not-found':
-        return 'Usuário não encontrado.';
-      case 'invalid-phone-number':
-        return 'Número de telefone inválido.';
+      case 'invalid-verification-code':
+        return 'Código inválido.';
+      case 'session-expired':
+        return 'Código expirado. Solicite outro.';
       case 'too-many-requests':
         return 'Muitas tentativas. Tente novamente mais tarde.';
-      case 'network-request-failed':
-        return 'Erro de rede. Verifique sua internet.';
       default:
         return e.message ?? 'Ocorreu um erro.';
     }
@@ -144,7 +95,7 @@ class _ForgotScreenState extends State<ForgotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ForgotScreen.orangeBg,
+      backgroundColor: OtpScreen.orangeBg,
       body: SafeArea(
         child: Stack(
           children: [
@@ -155,7 +106,7 @@ class _ForgotScreenState extends State<ForgotScreen> {
                 child: Container(
                   width: 340,
                   decoration: BoxDecoration(
-                    color: ForgotScreen.orangeBg,
+                    color: OtpScreen.orangeBg,
                     borderRadius: BorderRadius.circular(36),
                   ),
                   child: Center(
@@ -180,7 +131,7 @@ class _ForgotScreenState extends State<ForgotScreen> {
                                 },
                                 child: const Icon(
                                   Icons.arrow_back_ios_new,
-                                  color: ForgotScreen.textDark,
+                                  color: OtpScreen.textDark,
                                   size: 18,
                                 ),
                               ),
@@ -188,50 +139,60 @@ class _ForgotScreenState extends State<ForgotScreen> {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            'Forgot',
+                            'OTP Code',
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w700,
-                              color: ForgotScreen.textDark,
+                              color: OtpScreen.textDark,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Recover your password',
-                            style: TextStyle(
+                          Text(
+                            'Enter the code sent to ${widget.phoneNumber}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
                               fontSize: 12,
-                              color: ForgotScreen.textLight,
+                              color: OtpScreen.textLight,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
                           const SizedBox(height: 28),
-                          InputField(
-                            label: 'Email',
-                            hint: 'example@email.com',
-                            icon: Icons.email_outlined,
-                            controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          const SizedBox(height: 16),
-                          InputField(
-                            label: 'Phone',
-                            hint: '+55 81 99999-9999',
-                            icon: Icons.phone_outlined,
-                            controller: phoneController,
-                            keyboardType: TextInputType.phone,
+                          TextField(
+                            controller: codeController,
+                            keyboardType: TextInputType.number,
+                            maxLength: 6,
+                            decoration: InputDecoration(
+                              labelText: 'Código',
+                              hintText: '123456',
+                              counterText: '',
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFE5E5E5),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: OtpScreen.orangeButton,
+                                  width: 1.2,
+                                ),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 24),
                           SizedBox(
                             width: double.infinity,
                             height: 48,
                             child: ElevatedButton(
-                              onPressed: isLoading ? null : _handleSend,
+                              onPressed: isLoading ? null : _verifyCode,
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
-                                backgroundColor: ForgotScreen.orangeButton,
+                                backgroundColor: OtpScreen.orangeButton,
                                 foregroundColor: Colors.white,
                                 disabledBackgroundColor:
-                                    ForgotScreen.orangeButton.withOpacity(0.7),
+                                    OtpScreen.orangeButton.withOpacity(0.7),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -249,7 +210,7 @@ class _ForgotScreenState extends State<ForgotScreen> {
                                       ),
                                     )
                                   : const Text(
-                                      'SEND',
+                                      'VERIFY',
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
@@ -258,21 +219,6 @@ class _ForgotScreenState extends State<ForgotScreen> {
                                     ),
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              'Back to Login',
-                              style: TextStyle(
-                                color: ForgotScreen.orangeButton,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
                         ],
                       ),
                     ),

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'submernu/analise_consumo_regiao_screen.dart';
 import 'submernu/alertas_desperdicio_screen.dart';
 import 'submernu/previsao_demanda_screen.dart'; 
+import 'submernu/perfil_usuario.dart';
 
 class WelcomeScreen extends StatelessWidget {
   WelcomeScreen({super.key});
@@ -70,6 +71,19 @@ class WelcomeScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (_) => const AlertasDesperdicioScreen(),
+                    ),
+                  );
+                },
+              ),
+               ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Perfil usuário'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PerfilusuarioScreen(),
                     ),
                   );
                 },
