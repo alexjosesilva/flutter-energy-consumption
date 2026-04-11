@@ -40,7 +40,11 @@ To install the application, follow these steps:
 - Firebase
 
 ### Screenshots
-![Screenshot 1](https://via.placeholder.com/150)
-![Screenshot 2](https://via.placeholder.com/150)
+<div align="center">
 
+<img src="assets/img/login.png" width="320">
+<img src="assets/img/welcome.png" width="320">
+<img src="assets/img/menu.png" width="320">
+
+</div>
 For more details, please refer to the documentation or contact the project maintainer.
