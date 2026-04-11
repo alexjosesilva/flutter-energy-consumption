@@ -1,83 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'submernu/analise_consumo_regiao_screen.dart';
-import 'submernu/alertas_desperdicio_screen.dart';
-import 'submernu/previsao_demanda_screen.dart'; 
 
-class WelcomeScreen extends StatelessWidget {
-  WelcomeScreen({super.key});
+class SubmenuBaseScreen extends StatelessWidget {
+  final String title;
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  const SubmenuBaseScreen({
+    super.key,
+    required this.title,
+  });
 
   static const Color orangeDark = Color(0xFFFF6D00);
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    final email = user?.email ?? 'Usuário autenticado';
-
     return Scaffold(
-      key: _scaffoldKey,
-      endDrawer: Drawer(
-        child: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                color: orangeDark,
-                child: const Text(
-                  'B2B + Governo',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.bar_chart),
-                title: const Text('Análise de consumo por região'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AnaliseConsumoRegiaoScreen(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.show_chart),
-                title: const Text('Previsão de demanda'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const PrevisaoDemandaScreen(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.warning_amber_rounded),
-                title: const Text('Alertas de desperdício'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AlertasDesperdicioScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
       body: Stack(
         children: [
           Container(
@@ -177,21 +112,22 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Spacer(),
                       IconButton(
                         onPressed: () {
-                          _scaffoldKey.currentState?.openEndDrawer();
+                          Navigator.pop(context);
                         },
                         icon: const Icon(
-                          Icons.menu,
+                          Icons.arrow_back,
                           color: Colors.white,
-                          size: 32,
+                          size: 30,
                         ),
                       ),
                     ],
                   ),
                 ),
+
                 const Spacer(),
+
                 Container(
                   width: 140,
                   height: 140,
@@ -200,37 +136,44 @@ class WelcomeScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    Icons.person,
-                    size: 80,
+                    Icons.dashboard_outlined,
+                    size: 70,
                     color: Colors.orange,
                   ),
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 24),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
                 const Text(
-                  'B2B Governo',
+                  'Em construção',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  email,
-                  style: const TextStyle(
                     color: Colors.white70,
-                    fontSize: 14,
+                    fontSize: 16,
                   ),
                 ),
+
                 const SizedBox(height: 30),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: ElevatedButton(
-                    onPressed: () async {
-                      await FirebaseAuth.instance.signOut();
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
+                    onPressed: () {
+                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
@@ -240,9 +183,10 @@ class WelcomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text('SAIR'),
+                    child: const Text('VOLTAR'),
                   ),
                 ),
+
                 const Spacer(),
               ],
             ),
