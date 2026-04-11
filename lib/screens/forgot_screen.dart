@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import '../widgets/input_field.dart';
 import '../widgets/background_pattern.dart';
 
+final TextEditingController emailController = TextEditingController();
+final TextEditingController phoneController = TextEditingController();
 class ForgotScreen extends StatelessWidget {
+  
   const ForgotScreen({super.key});
 
   static const Color orangeBg = Color(0xFFFF5A1F);
