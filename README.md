@@ -42,9 +42,9 @@ To install the application, follow these steps:
 ### Screenshots
 <div align="center">
 
-<img src="assets/img/login.png" width="320">
-<img src="assets/img/welcome.png" width="320">
-<img src="assets/img/menu.png" width="320">
+<img src="assets/img/login.png" width="280">
+<img src="assets/img/welcome.png" width="280">
+<img src="assets/img/menu.png" width="280">
 
 </div>
 For more details, please refer to the documentation or contact the project maintainer.
