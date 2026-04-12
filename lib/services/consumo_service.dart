@@ -5,7 +5,7 @@ import '../models/consumo_regiao.dart';
 
 class ConsumoService {
   // Troque pela URL real do seu backend
-  static const String baseUrl = 'http://10.0.2.2:8000';
+  static const String baseUrl = 'https://060eaa19-577a-48fd-a4be-0c27fb2ed453-00-21baq6ip3w4rg.picard.replit.dev:8000';
 
   Future<List<ConsumoRegiao>> buscarConsumoPorRegiao({
     int ano = 2026,
