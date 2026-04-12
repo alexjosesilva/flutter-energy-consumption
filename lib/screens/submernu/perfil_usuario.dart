@@ -6,8 +6,14 @@ class PerfilusuarioScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SubmenuBaseScreen(
-      title: 'Perfil do Usuário',
+    return SubmenuBaseScreen(
+      title: 'Perfil do usuário',
+      child: const Center(
+        child: Text(
+          'Perfil do usuário',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 }

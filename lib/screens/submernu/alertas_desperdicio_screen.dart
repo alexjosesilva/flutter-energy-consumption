@@ -6,8 +6,14 @@ class AlertasDesperdicioScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SubmenuBaseScreen(
+    return SubmenuBaseScreen(
       title: 'Alertas de desperdício',
+      child: const Center(
+        child: Text(
+          'Em construção',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 }

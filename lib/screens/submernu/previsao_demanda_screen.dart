@@ -6,8 +6,13 @@ class PrevisaoDemandaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SubmenuBaseScreen(
+    return SubmenuBaseScreen(
       title: 'Previsão de demanda',
+      child: const Center(
+        child: Text(
+          'Conteúdo da previsão de demanda', 
+          style: TextStyle(color: Colors.white),),
+      ),
     );
   }
 }
