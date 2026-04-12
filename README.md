@@ -1,50 +1,64 @@
 # Flutter Energy Consumption
 
-## Badges
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![GitHub issues](https://img.shields.io/github/issues/alexjosesilva/flutter-energy-consumption)
+## Overview
+This repository contains a Flutter application that monitors and displays energy consumption data in a user-friendly interface.
 
-## Project Documentation
-This project is a Flutter application that visualizes energy consumption data.
+## Features
+- **Real-time data display:** Shows the current energy consumption.
+- **Historical data tracking:** Save and visualize past energy consumption data.
+- **Notifications:** Get alerts for high energy consumption trends.
+- **User authentication:** Secure login for users to access their data.
 
-### Language Composition Visualization
-The application provides visual representations of energy consumption patterns using various charts and graphs.
+## Tech Stack
+- **Frontend:** Flutter
+- **Backend:** Firebase
+- **Database:** Firestore
+- **State Management:** Provider
 
-### Installation Instructions
-To install the application, follow these steps:
+## Architecture Overview
+
+![Architecture Diagram](path/to/architecture_diagram.png)  
+The architecture consists of:
+- A Flutter frontend that communicates with a Firebase backend.
+- Data is stored in Firestore, which provides a scalable database solution.
+- The Provider package is used for state management to keep the app responsive.
+
+## Installation Instructions
 1. Clone the repository:
-   ```
+   ```bash
    git clone https://github.com/alexjosesilva/flutter-energy-consumption.git
-   ```
-2. Navigate into the project directory:
-   ```
    cd flutter-energy-consumption
    ```
-3. Run the following command to install dependencies:
-   ```
+2. Install the Flutter dependencies:
+   ```bash
    flutter pub get
    ```
-4. Launch the application:
-   ```
+3. Set up Firebase by following the [Firebase setup guide](https://firebase.google.com/docs/flutter/setup).
+4. Run the application:
+   ```bash
    flutter run
    ```
 
-### Features
-- Visualizes energy consumption data.
-- Supports multiple data sources.
-- Customizable graphs and charts.
+## Project Structure
+```
+flutter-energy-consumption/
+├── android/                 # Android-specific code
+├── ios/                     # iOS-specific code
+├── lib/                     # Flutter application code
+│   ├── models/              # Data models
+│   ├── providers/           # State management
+│   ├── screens/             # Application screens
+│   ├── services/            # Services for Firebase and other APIs
+│   └── main.dart            # Entry point
+├── test/                    # Unit tests
+└── pubspec.yaml             # Project configuration
+```  
 
-### Tech Stack
-- Flutter
-- Dart
-- Firebase
+## Contributing
+We welcome contributions! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for details on our code of conduct, and the process for submitting pull requests.
 
-### Screenshots
-<div align="center">
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-<img src="assets/img/login.png" width="240">
-<img src="assets/img/welcome.png" width="240">
-<img src="assets/img/menu.png" width="240">
-
-</div>
-For more details, please refer to the documentation or contact the project maintainer.
+## Contact
+For questions or feedback, please reach out to [alexjosesilva](mailto:your.email@example.com).
