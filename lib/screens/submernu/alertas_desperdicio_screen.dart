@@ -113,6 +113,11 @@ class AlertasDesperdicioScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: Color(0xFF999999),
+                  ),
                 ],
               ),
             ),
@@ -198,82 +203,265 @@ class _AlertaCard extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF1EB),
-              borderRadius: BorderRadius.circular(16),
+  String _explicacaoDetalhada() {
+    switch (titulo) {
+      case 'Consumo acima do esperado':
+        return 'Este alerta indica que o consumo real ficou acima da faixa estimada para o período analisado. '
+            'No caso identificado, a região Agreste apresentou aumento de 18% em relação ao mês anterior. '
+            'Isso pode indicar crescimento anormal da demanda, desperdício operacional ou necessidade de investigação em unidades com maior consumo.';
+
+      case 'Pico fora do horário padrão':
+        return 'Este alerta mostra que houve uso elevado de energia fora da janela de funcionamento habitual. '
+            'O sistema detectou um pico entre 22h e 23h, o que pode indicar equipamentos ligados sem necessidade, '
+            'iluminação ativa fora do expediente ou processos operando além do horário esperado.';
+
+      case 'Possível desperdício em unidade pública':
+        return 'Este alerta aponta padrão de consumo constante durante a madrugada em uma unidade pública. '
+            'Esse comportamento pode sugerir desperdício de energia, falha de desligamento automático, '
+            'equipamentos operando continuamente ou necessidade de manutenção preventiva.';
+
+      case 'Equipamento com uso contínuo':
+        return 'Este alerta indica que um equipamento aparenta estar funcionando por tempo prolongado sem interrupções. '
+            'Esse padrão pode representar sobrecarga, operação indevida, ausência de automação de desligamento '
+            'ou necessidade de revisão do uso do equipamento.';
+
+      default:
+        return 'Este alerta foi gerado pelo sistema de monitoramento com base em padrões anormais de consumo energético.';
+    }
+  }
+
+  void _mostrarDetalhes(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(28),
             ),
-            child: Icon(
-              icone,
-              color: const Color(0xFFFF5A1F),
-              size: 28,
-            ),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: SafeArea(
+            top: false,
+            child: Wrap(
               children: [
-                Text(
-                  titulo,
-                  style: const TextStyle(
-                    color: Color(0xFF222222),
-                    fontSize: 16,
+                Center(
+                  child: Container(
+                    width: 44,
+                    height: 5,
+                    margin: const EdgeInsets.only(bottom: 18),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF1EB),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(
+                        icone,
+                        color: const Color(0xFFFF5A1F),
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            titulo,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF222222),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _badgeColor(),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Text(
+                              _badgeLabel(),
+                              style: TextStyle(
+                                color: _badgeTextColor(),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Resumo do alerta',
+                  style: TextStyle(
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
+                    color: Color(0xFF222222),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   descricao,
                   style: const TextStyle(
-                    color: Color(0xFF666666),
-                    fontSize: 13,
-                    height: 1.4,
+                    fontSize: 14,
+                    height: 1.5,
+                    color: Color(0xFF555555),
                   ),
                 ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
+                const SizedBox(height: 18),
+                const Text(
+                  'Explicação detalhada',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF222222),
                   ),
-                  decoration: BoxDecoration(
-                    color: _badgeColor(),
-                    borderRadius: BorderRadius.circular(999),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _explicacaoDetalhada(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    height: 1.6,
+                    color: Color(0xFF555555),
                   ),
-                  child: Text(
-                    _badgeLabel(),
-                    style: TextStyle(
-                      color: _badgeTextColor(),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
+                ),
+                const SizedBox(height: 22),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF5A1F),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Fechar',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(22),
+        onTap: () => _mostrarDetalhes(context),
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x14000000),
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF1EB),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  icone,
+                  color: const Color(0xFFFF5A1F),
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      titulo,
+                      style: const TextStyle(
+                        color: Color(0xFF222222),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      descricao,
+                      style: const TextStyle(
+                        color: Color(0xFF666666),
+                        fontSize: 13,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _badgeColor(),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        _badgeLabel(),
+                        style: TextStyle(
+                          color: _badgeTextColor(),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
