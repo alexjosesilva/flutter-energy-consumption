@@ -61,4 +61,4 @@ We welcome contributions! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) fil
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
-For questions or feedback, please reach out to [alexjosesilva](mailto:your.email@example.com).
+For questions or feedback, please reach out to [alexjosesilva](mailto:alexjosesilvati@gmail.com).
