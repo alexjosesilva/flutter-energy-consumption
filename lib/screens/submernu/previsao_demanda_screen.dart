@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/previsao_demanda.dart';
 import '../../services/previsao_demanda_service.dart';
 import '../../widgets/previsao_demanda_chart.dart';
+import 'submenu_base_screen.dart';
 
 class PrevisaoDemandaScreen extends StatefulWidget {
   const PrevisaoDemandaScreen({super.key});
@@ -13,8 +14,8 @@ class PrevisaoDemandaScreen extends StatefulWidget {
 class _PrevisaoDemandaScreenState extends State<PrevisaoDemandaScreen> {
   final PrevisaoDemandaService _service = PrevisaoDemandaService();
 
-  late Future<List<PrevisaoDemanda>> _future;
-  String regiaoSelecionada = 'Nordeste';
+  String? regiaoSelecionada;
+  Future<List<PrevisaoDemanda>>? _future;
 
   final List<String> regioes = const [
     'Norte',
@@ -24,33 +25,35 @@ class _PrevisaoDemandaScreenState extends State<PrevisaoDemandaScreen> {
     'Sul',
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _future = _service.buscarPrevisao(regiao: regiaoSelecionada);
-  }
-
   void recarregar() {
+    if (regiaoSelecionada == null) return;
+
     setState(() {
-      _future = _service.buscarPrevisao(regiao: regiaoSelecionada);
+      _future = _service.buscarPrevisao(
+        regiao: regiaoSelecionada!,
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Previsão de Demanda'),
-      ),
-      body: Padding(
+    return SubmenuBaseScreen(
+      title: 'Previsão de Demanda',
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // SELECT REGIÃO
             DropdownButtonFormField<String>(
               value: regiaoSelecionada,
-              decoration: const InputDecoration(
-                labelText: 'Região',
-                border: OutlineInputBorder(),
+              hint: const Text('Selecione uma região'),
+              dropdownColor: Colors.white,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               items: regioes
                   .map(
@@ -61,62 +64,72 @@ class _PrevisaoDemandaScreenState extends State<PrevisaoDemandaScreen> {
                   )
                   .toList(),
               onChanged: (value) {
-                if (value != null) {
-                  regiaoSelecionada = value;
-                  recarregar();
-                }
+                regiaoSelecionada = value;
+                recarregar();
               },
             ),
+
             const SizedBox(height: 16),
+
+            // CONTEÚDO
             Expanded(
-              child: FutureBuilder<List<PrevisaoDemanda>>(
-                future: _future,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  if (snapshot.hasError) {
-                    return Center(
+              child: _future == null
+                  ? const Center(
                       child: Text(
-                        'Erro ao carregar previsão: ${snapshot.error}',
+                        'Selecione uma região para ver a previsão',
+                        style: TextStyle(color: Colors.white),
                       ),
-                    );
-                  }
+                    )
+                  : FutureBuilder<List<PrevisaoDemanda>>(
+                      future: _future,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          );
+                        }
 
-                  final dados = snapshot.data ?? [];
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              'Erro: ${snapshot.error}',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }
 
-                  if (dados.isEmpty) {
-                    return const Center(
-                      child: Text('Nenhum dado encontrado'),
-                    );
-                  }
+                        final dados = snapshot.data ?? [];
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Previsão para $regiaoSelecionada',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: PrevisaoDemandaChart(dados: dados),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Previsão para $regiaoSelecionada',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: PrevisaoDemandaChart(dados: dados),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
             ),
           ],
         ),
