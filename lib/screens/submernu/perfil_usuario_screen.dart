@@ -35,114 +35,132 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
   }
 
   Future<void> _carregarDadosUsuario() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-
-      if (user == null) {
-        setState(() => _carregando = false);
-        return;
-      }
-
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      final data = doc.data();
-
-      _nomeController.text =
-          (data?['name'] ?? user.displayName ?? '').toString();
-      _emailController.text =
-          (data?['email'] ?? user.email ?? '').toString();
-      _telefoneController.text =
-          (data?['phone'] ?? '').toString();
-
-      setState(() => _carregando = false);
-    } catch (e) {
-      setState(() => _carregando = false);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao carregar perfil: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  Future<void> _salvarPerfil() async {
-    if (!_formKey.currentState!.validate()) return;
-
+  try {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
 
-    setState(() => _salvando = true);
+    if (user == null) {
+      setState(() => _carregando = false);
+      return;
+    }
 
-    final nome = _nomeController.text.trim();
-    final email = _emailController.text.trim();
-    final telefone = _telefoneController.text.trim();
+    await user.reload();
+    final userAtualizado = FirebaseAuth.instance.currentUser;
 
-    try {
-      if (user.displayName != nome) {
-        await user.updateDisplayName(nome);
-      }
+    final emailAuth = userAtualizado?.email ?? '';
 
-      if (user.email != email) {
-        await user.verifyBeforeUpdateEmail(email);
-      }
+    final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final doc = await docRef.get();
+    final data = doc.data();
 
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'uid': user.uid,
-        'name': nome,
-        'email': email,
-        'phone': telefone,
+    final emailFirestore = (data?['email'] ?? '').toString();
+
+    if (emailAuth.isNotEmpty && emailAuth != emailFirestore) {
+      await docRef.set({
+        'email': emailAuth,
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
+    }
 
-      await user.reload();
+    _nomeController.text =
+        (data?['name'] ?? userAtualizado?.displayName ?? '').toString();
+
+    _emailController.text = emailAuth;
+    _telefoneController.text = (data?['phone'] ?? '').toString();
+
+    setState(() => _carregando = false);
+  } catch (e) {
+    setState(() => _carregando = false);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Erro ao carregar perfil: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+  Future<void> _salvarPerfil() async {
+  if (!_formKey.currentState!.validate()) return;
+
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return;
+
+  setState(() => _salvando = true);
+
+  final nome = _nomeController.text.trim();
+  final novoEmail = _emailController.text.trim();
+  final telefone = _telefoneController.text.trim();
+
+  try {
+    final emailAtual = user.email ?? '';
+
+    if (user.displayName != nome) {
+      await user.updateDisplayName(nome);
+    }
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      'uid': user.uid,
+      'name': nome,
+      'phone': telefone,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+
+    if (novoEmail != emailAtual) {
+      await user.verifyBeforeUpdateEmail(novoEmail);
 
       if (!mounted) return;
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Enviamos um link de confirmação para o novo email. Confirme antes de usar o novo endereço para login.',
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Perfil atualizado com sucesso!'),
           backgroundColor: Colors.green,
         ),
       );
-    } on FirebaseAuthException catch (e) {
-      String mensagem = 'Erro ao atualizar perfil';
+    }
 
-      if (e.code == 'requires-recent-login') {
-        mensagem = 'Para alterar o email, faça login novamente.';
-      } else if (e.code == 'email-already-in-use') {
-        mensagem = 'Este email já está em uso.';
-      } else if (e.code == 'invalid-email') {
-        mensagem = 'Email inválido.';
-      }
+    await user.reload();
+  } on FirebaseAuthException catch (e) {
+    String mensagem = 'Erro ao atualizar perfil';
 
-      if (!mounted) return;
+    if (e.code == 'requires-recent-login') {
+      mensagem = 'Para alterar o email, faça login novamente.';
+    } else if (e.code == 'email-already-in-use') {
+      mensagem = 'Este email já está em uso.';
+    } else if (e.code == 'invalid-email') {
+      mensagem = 'Email inválido.';
+    }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(mensagem),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao salvar perfil: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _salvando = false);
-      }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: Colors.red,
+      ),
+    );
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Erro ao salvar perfil: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  } finally {
+    if (mounted) {
+      setState(() => _salvando = false);
     }
   }
+}
 
   InputDecoration _inputDecoration({
     required String label,
