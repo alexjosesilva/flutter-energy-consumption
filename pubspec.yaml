@@ -11,23 +11,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  cupertino_icons: ^1.0.6
   firebase_core: ^4.6.0
   firebase_auth: ^6.3.0
   cloud_firestore: ^6.2.0
+  cupertino_icons: ^1.0.6
+  http: ^1.2.1
+  fl_chart: ^0.68.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-  flutter_launcher_icons: ^0.14.3   # ✅ ADICIONADO
+  flutter_launcher_icons: ^0.14.3
 
 flutter:
   uses-material-design: true
 
   assets:
-    - assets/icon/b2b_governo.png   # ✅ OK
+    - assets/icon/b2b_governo.png 
 
 flutter_launcher_icons:
   android: true

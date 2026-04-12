@@ -1,0 +1,30 @@
+import 'package:flutter/material.dart';
+
+class LoadingState extends StatelessWidget {
+  final String message;
+
+  const LoadingState({
+    super.key,
+    this.message = 'Carregando dados...',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(color: Colors.white),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
