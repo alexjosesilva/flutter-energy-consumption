@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class SubmenuBaseScreen extends StatelessWidget {
   final String title;
+  final Widget child; // ✅ ADICIONAR
 
   const SubmenuBaseScreen({
     super.key,
     required this.title,
+    required this.child, // ✅ ADICIONAR
   });
 
   static const Color orangeDark = Color(0xFFFF6D00);
@@ -15,6 +17,7 @@ class SubmenuBaseScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          // 🎨 Background (igual welcome)
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -29,6 +32,7 @@ class SubmenuBaseScreen extends StatelessWidget {
             ),
           ),
 
+          // 🎨 Bolhas decorativas
           Positioned(
             top: 80,
             left: -40,
@@ -41,6 +45,7 @@ class SubmenuBaseScreen extends StatelessWidget {
               ),
             ),
           ),
+
           Positioned(
             top: 180,
             left: 40,
@@ -53,6 +58,7 @@ class SubmenuBaseScreen extends StatelessWidget {
               ),
             ),
           ),
+
           Positioned(
             top: 120,
             right: 30,
@@ -65,6 +71,7 @@ class SubmenuBaseScreen extends StatelessWidget {
               ),
             ),
           ),
+
           Positioned(
             top: 220,
             right: 40,
@@ -77,6 +84,7 @@ class SubmenuBaseScreen extends StatelessWidget {
               ),
             ),
           ),
+
           Positioned(
             bottom: 180,
             left: -20,
@@ -89,6 +97,7 @@ class SubmenuBaseScreen extends StatelessWidget {
               ),
             ),
           ),
+
           Positioned(
             bottom: 120,
             right: 20,
@@ -102,92 +111,44 @@ class SubmenuBaseScreen extends StatelessWidget {
             ),
           ),
 
+          // 🔥 Conteúdo
           SafeArea(
             child: Column(
               children: [
+                // Header
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 22,
+                    horizontal: 16,
                     vertical: 14,
                   ),
                   child: Row(
                     children: [
                       IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                        onPressed: () => Navigator.pop(context),
                         icon: const Icon(
                           Icons.arrow_back,
                           color: Colors.white,
                           size: 30,
                         ),
                       ),
+                      Expanded(
+                        child: Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 48),
                     ],
                   ),
                 ),
 
-                const Spacer(),
-
-                Container(
-                  width: 140,
-                  height: 140,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.dashboard_outlined,
-                    size: 70,
-                    color: Colors.orange,
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                const Text(
-                  'Em construção',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 16,
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      backgroundColor: Colors.white,
-                      foregroundColor: orangeDark,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: const Text('VOLTAR'),
-                  ),
-                ),
-
-                const Spacer(),
+                // 👉 AQUI entra o conteúdo dinâmico
+                Expanded(child: child), // ✅ ESSENCIAL
               ],
             ),
           ),
