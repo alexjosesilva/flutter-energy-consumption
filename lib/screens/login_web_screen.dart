@@ -13,7 +13,7 @@ class _LoginWebScreenState extends BaseLoginScreenState<LoginWebScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: orangeBg,
+      backgroundColor: BaseLoginScreenState.orangeBg,
       body: Stack(
         children: [
           const BackgroundPattern(),
