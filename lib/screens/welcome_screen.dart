@@ -1,25 +1,159 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
 import 'submernu/analise_consumo_regiao_screen.dart';
 import 'submernu/alertas_desperdicio_screen.dart';
-import 'submernu/previsao_demanda_screen.dart'; 
 import 'submernu/perfil_usuario_screen.dart';
+import 'submernu/previsao_demanda_screen.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   WelcomeScreen({super.key});
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
 
+class _WelcomeScreenState extends State<WelcomeScreen> {
   static const Color orangeDark = Color(0xFFFF6D00);
+
+  int selectedIndex = 0;
+
+  final List<Widget> pages = const [
+    AnaliseConsumoRegiaoScreen(),
+    PrevisaoDemandaScreen(),
+    AlertasDesperdicioScreen(),
+    PerfilUsuarioScreen(),
+  ];
+
+  final List<String> titles = const [
+    'Análise de consumo por região',
+    'Previsão de demanda',
+    'Alertas de desperdício',
+    'Perfil do usuário',
+  ];
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     final email = user?.email ?? 'Usuário autenticado';
 
+    final isWide = kIsWeb || MediaQuery.of(context).size.width >= 900;
+
+    if (isWide) {
+      return Scaffold(
+        body: Row(
+          children: [
+            NavigationRail(
+              selectedIndex: selectedIndex,
+              onDestinationSelected: (index) {
+                setState(() => selectedIndex = index);
+              },
+              backgroundColor: orangeDark,
+              labelType: NavigationRailLabelType.all,
+              leading: const Padding(
+                padding: EdgeInsets.only(top: 24),
+                child: Icon(Icons.bolt, color: Colors.white, size: 32),
+              ),
+              selectedIconTheme: const IconThemeData(color: Colors.white),
+              unselectedIconTheme:
+                  const IconThemeData(color: Colors.white70),
+              selectedLabelTextStyle:
+                  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              unselectedLabelTextStyle:
+                  const TextStyle(color: Colors.white70),
+              destinations: const [
+                NavigationRailDestination(
+                  icon: Icon(Icons.bar_chart),
+                  label: Text('Consumo'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.show_chart),
+                  label: Text('Previsão'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.warning_amber_rounded),
+                  label: Text('Alertas'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.person),
+                  label: Text('Perfil'),
+                ),
+              ],
+              trailing: Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: IconButton(
+                      onPressed: () async {
+                        await FirebaseAuth.instance.signOut();
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 18,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 8,
+                          color: Color(0x14000000),
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          titles[selectedIndex],
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          email,
+                          style: const TextStyle(color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: const Color(0xFFF8F8F8),
+                      child: pages[selectedIndex],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
-      key: _scaffoldKey,
-      endDrawer: Drawer(
+      appBar: AppBar(
+        backgroundColor: orangeDark,
+        foregroundColor: Colors.white,
+        title: Text(titles[selectedIndex]),
+      ),
+      drawer: Drawer(
         child: SafeArea(
           child: Column(
             children: [
@@ -27,242 +161,73 @@ class WelcomeScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 color: orangeDark,
-                child: const Text(
-                  'B2B + Governo',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'B2B + Governo',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      email,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  ],
                 ),
               ),
               ListTile(
                 leading: const Icon(Icons.bar_chart),
                 title: const Text('Análise de consumo por região'),
                 onTap: () {
+                  setState(() => selectedIndex = 0);
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AnaliseConsumoRegiaoScreen(),
-                    ),
-                  );
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.show_chart),
                 title: const Text('Previsão de demanda'),
                 onTap: () {
+                  setState(() => selectedIndex = 1);
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const PrevisaoDemandaScreen(),
-                    ),
-                  );
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.warning_amber_rounded),
                 title: const Text('Alertas de desperdício'),
                 onTap: () {
+                  setState(() => selectedIndex = 2);
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AlertasDesperdicioScreen(),
-                    ),
-                  );
                 },
               ),
-               ListTile(
+              ListTile(
                 leading: const Icon(Icons.person),
                 title: const Text('Perfil usuário'),
                 onTap: () {
+                  setState(() => selectedIndex = 3);
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const PerfilUsuarioScreen(),
-                    ),
-                  );
+                },
+              ),
+              const Spacer(),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Sair'),
+                onTap: () async {
+                  await FirebaseAuth.instance.signOut();
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                  Navigator.pop(context);
                 },
               ),
             ],
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFFF7A00),
-                  Color(0xFFFF5A1F),
-                  Color(0xFFE63E62),
-                ],
-              ),
-            ),
-          ),
-
-          Positioned(
-            top: 80,
-            left: -40,
-            child: Container(
-              width: 220,
-              height: 220,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 180,
-            left: 40,
-            child: Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.10),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 120,
-            right: 30,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.10),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 220,
-            right: 40,
-            child: Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 180,
-            left: -20,
-            child: Container(
-              width: 140,
-              height: 140,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 120,
-            right: 20,
-            child: Container(
-              width: 170,
-              height: 170,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-
-          SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 22,
-                    vertical: 14,
-                  ),
-                  child: Row(
-                    children: [
-                      const Spacer(),
-                      IconButton(
-                        onPressed: () {
-                          _scaffoldKey.currentState?.openEndDrawer();
-                        },
-                        icon: const Icon(
-                          Icons.menu,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  width: 140,
-                  height: 140,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.person,
-                    size: 80,
-                    color: Colors.orange,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'B2B Governo',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  email,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await FirebaseAuth.instance.signOut();
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      backgroundColor: Colors.white,
-                      foregroundColor: orangeDark,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: const Text('SAIR'),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: pages[selectedIndex],
     );
   }
 }
