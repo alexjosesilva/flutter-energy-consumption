@@ -4,7 +4,7 @@ import '../models/previsao_demanda.dart';
 
 class PrevisaoDemandaService {
   static const String baseUrl =
-      'https://b-2-bgoverno-apifast--alexjose.replit.app';
+      'https://b2bgoverno-apifast.onrender.com';
 
   Future<List<PrevisaoDemanda>> buscarPrevisao({
     int ano = 2026,
