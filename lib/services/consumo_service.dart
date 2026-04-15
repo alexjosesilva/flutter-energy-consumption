@@ -11,7 +11,8 @@ class ConsumoService {
     String indicador = 'DEC',
   }) async {
     final uri = Uri.parse(
-      '$baseUrl/api/consumo/regioes?ano=$ano&indicador=$indicador',
+      //'$baseUrl/api/consumo/regioes?ano=$ano&indicador=$indicador',
+      '$baseUrl/api/consumo/regioes',
     );
 
     final response = await http.get(uri);
