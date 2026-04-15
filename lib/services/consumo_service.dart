@@ -4,7 +4,7 @@ import '../models/consumo_regiao.dart';
 
 class ConsumoService {
   // Troque pela URL real do seu backend
-  static const String baseUrl = 'https://b-2-bgoverno-apifast--alexjose.replit.app/';
+  static const String baseUrl = 'https://b2bgoverno-apifast.onrender.com';
 
   Future<List<ConsumoRegiao>> buscarConsumoPorRegiao({
     int ano = 2026,
